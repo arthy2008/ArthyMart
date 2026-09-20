@@ -15,4 +15,4 @@ A multi-seller e-commerce marketplace web application built with Java Servlets, 
 - **Database:** H2 Database, HikariCP Connection Pooling
 - **Frontend:** JSP, JSTL, Vanilla JavaScript
 - **Build & CI:** Apache Maven, GitHub Actions
--
+
