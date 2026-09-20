@@ -1,0 +1,9 @@
+target/
+*.class
+*.war
+config.properties
+.env
+*.mv.db
+.classpath
+.project
+.settings/
