@@ -1,0 +1,159 @@
+package com.arthy.arthymart.dao;
+
+import com.arthy.arthymart.model.Product;
+import com.arthy.arthymart.util.DatabaseConnectionListener;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class ProductDAO {
+
+    public List<Product> findAll() throws SQLException {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY created_at DESC";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                products.add(mapResultSetToProduct(rs));
+            }
+        }
+        return products;
+    }
+
+    public Optional<Product> findById(int id) throws SQLException {
+        String sql = "SELECT * FROM products WHERE id = ?";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapResultSetToProduct(rs));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public List<Product> findBySellerId(int sellerId) throws SQLException {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE seller_id = ? ORDER BY created_at DESC";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, sellerId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    products.add(mapResultSetToProduct(rs));
+                }
+            }
+        }
+        return products;
+    }
+
+    public List<Product> search(String query, String category) throws SQLException {
+        List<Product> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (query != null && !query.trim().isEmpty()) {
+            sql.append(" AND (LOWER(name) LIKE ? OR LOWER(description) LIKE ?)");
+            String like = "%" + query.trim().toLowerCase() + "%";
+            params.add(like);
+            params.add(like);
+        }
+        if (category != null && !category.trim().isEmpty()) {
+            sql.append(" AND LOWER(category) = ?");
+            params.add(category.trim().toLowerCase());
+        }
+        sql.append(" ORDER BY created_at DESC");
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    products.add(mapResultSetToProduct(rs));
+                }
+            }
+        }
+        return products;
+    }
+
+    public Product create(Product product) throws SQLException {
+        String sql = "INSERT INTO products (seller_id, name, description, price, stock_qty, category, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, product.getSellerId());
+            stmt.setString(2, product.getName());
+            stmt.setString(3, product.getDescription());
+            stmt.setBigDecimal(4, product.getPrice());
+            stmt.setInt(5, product.getStockQty());
+            stmt.setString(6, product.getCategory());
+            stmt.setString(7, product.getImageUrl());
+
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    product.setId(rs.getInt(1));
+                }
+            }
+        }
+        return product;
+    }
+
+    public boolean update(Product product) throws SQLException {
+        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock_qty = ?, category = ?, image_url = ? WHERE id = ? AND seller_id = ?";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getDescription());
+            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setInt(4, product.getStockQty());
+            stmt.setString(5, product.getCategory());
+            stmt.setString(6, product.getImageUrl());
+            stmt.setInt(7, product.getId());
+            stmt.setInt(8, product.getSellerId());
+            return stmt.executeUpdate() == 1;
+        }
+    }
+
+    public boolean delete(int productId, int sellerId) throws SQLException {
+        String sql = "DELETE FROM products WHERE id = ? AND seller_id = ?";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            stmt.setInt(2, sellerId);
+            return stmt.executeUpdate() == 1;
+        }
+    }
+
+    /** Admin moderation: delete any listing regardless of owner. */
+    public boolean deleteByAdmin(int productId) throws SQLException {
+        String sql = "DELETE FROM products WHERE id = ?";
+        try (Connection conn = DatabaseConnectionListener.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            return stmt.executeUpdate() == 1;
+        }
+    }
+
+    private Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setId(rs.getInt("id"));
+        product.setSellerId(rs.getInt("seller_id"));
+        product.setName(rs.getString("name"));
+        product.setDescription(rs.getString("description"));
+        product.setPrice(rs.getBigDecimal("price"));
+        product.setStockQty(rs.getInt("stock_qty"));
+        product.setCategory(rs.getString("category"));
+        try {
+            product.setImageUrl(rs.getString("image_url"));
+        } catch (SQLException e) {
+            product.setImageUrl(null);
+        }
+        product.setCreatedAt(rs.getTimestamp("created_at"));
+        return product;
+    }
+}
