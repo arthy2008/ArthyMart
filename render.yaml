@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: arthymart
+    runtime: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        value: jdbc:h2:mem:arthymartdb;DB_CLOSE_DELAY=-1;MODE=MySQL
