@@ -284,6 +284,8 @@ async function load() {
     } catch (e) {
         content.innerHTML = '<p style="color:#dc2626;">Error loading cart details.</p>';
     }
+}
+
 async function updateQty(productId, newQty) {
     if (newQty <= 0) {
         return removeItem(productId);
