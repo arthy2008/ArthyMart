@@ -318,7 +318,7 @@
                         <img src="${escapeHtml(img)}" class="arthy-card-img" alt="${escapeHtml(p.name)}">
                         <div class="arthy-card-details">
                             <div class="arthy-card-name">${escapeHtml(p.name)}</div>
-                            <div class="arthy-card-price">$${p.price} <span style="font-size:0.7rem; color:#64748b; font-weight:normal;">(${p.stockQty} in stock)</span></div>
+                            <div class="arthy-card-price">₹${p.price} <span style="font-size:0.7rem; color:#64748b; font-weight:normal;">(${p.stockQty} in stock)</span></div>
                         </div>
                     `;
                     cardsContainer.appendChild(card);

@@ -224,7 +224,7 @@ async function loadWishlist() {
                     '<a href="' + contextPath + '/product-detail.jsp?id=' + item.productId + '" style="text-decoration:none;">' +
                         '<h3 class="wish-name">' + safeName + '</h3>' +
                     '</a>' +
-                    '<div class="wish-price">$' + priceStr + '</div>' +
+                    '<div class="wish-price">₹' + priceStr + '</div>' +
                     '<div class="wish-stock ' + (inStock ? '' : 'out') + '">' +
                         (inStock ? '✓ In Stock (' + stock + ' available)' : '✗ Out of Stock') +
                     '</div>' +

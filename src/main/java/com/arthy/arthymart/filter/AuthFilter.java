@@ -131,10 +131,11 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 3. Buyer / Authenticated User area: /cart.jsp, /checkout.jsp, /orders.jsp, /wishlist.jsp, /api/cart/*, /api/orders/*, /api/wishlist/*
-        if (path.equals("/cart.jsp") || path.equals("/checkout.jsp") || path.equals("/orders.jsp")
+        // 3. Buyer / Authenticated User area: /checkout.jsp, /orders.jsp, /wishlist.jsp, /api/cart/*, /api/orders/*, /api/wishlist/*
+        if (path.equals("/checkout.jsp") || path.equals("/orders.jsp")
                 || path.equals("/wishlist.jsp")
-                || path.startsWith("/api/cart") || path.startsWith("/api/orders")
+                || path.startsWith("/api/cart")
+                || path.startsWith("/api/orders")
                 || path.startsWith("/api/wishlist")
                 || path.startsWith("/api/auth/me")
                 || (path.startsWith("/api/reviews") && "POST".equals(method))) {

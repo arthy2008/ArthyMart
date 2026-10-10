@@ -225,12 +225,12 @@ async function loadCheckoutData() {
             html +=
                 '<div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:8px; color:#334155;">' +
                     '<span>' + name + ' &times; ' + it.quantity + '</span>' +
-                    '<span style="font-weight:700;">$' + lineTotal + '</span>' +
+                    '<span style="font-weight:700;">₹' + lineTotal + '</span>' +
                 '</div>';
         });
         itemsBox.innerHTML = html;
-        document.getElementById('subtotalVal').textContent = '$' + Number(total).toFixed(2);
-        document.getElementById('grandTotalVal').textContent = '$' + Number(total).toFixed(2);
+        document.getElementById('subtotalVal').textContent = '₹' + Number(total).toFixed(2);
+        document.getElementById('grandTotalVal').textContent = '₹' + Number(total).toFixed(2);
 
     } catch (e) {
         document.getElementById('checkoutItems').innerHTML = '<p style="color:#dc2626;">Error loading items.</p>';
@@ -249,7 +249,7 @@ document.getElementById('payBtn').addEventListener('click', async () => {
         const data = await res.json();
 
         if (res.ok) {
-            resultBox.textContent = '✅ Order #' + data.id + ' placed successfully! Total: $' + data.totalAmount;
+            resultBox.textContent = '✅ Order #' + data.id + ' placed successfully! Total: ₹' + data.totalAmount;
             resultBox.style.color = '#16a34a';
             btn.textContent = '✅ Order Placed!';
             setTimeout(() => {

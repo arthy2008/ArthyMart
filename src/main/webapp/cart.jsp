@@ -241,14 +241,14 @@ async function load() {
                     '<img src="' + img + '" class="cart-item-img" alt="' + safeName + '">' +
                     '<div class="cart-item-info">' +
                         '<div class="cart-item-title">' + safeName + '</div>' +
-                        '<div class="cart-item-price">$' + it.unitPrice + ' per unit</div>' +
+                        '<div class="cart-item-price">₹' + it.unitPrice + ' per unit</div>' +
                     '</div>' +
                     '<div class="cart-qty-ctrl">' +
                         '<button class="cart-qty-btn" onclick="updateQty(' + it.productId + ', ' + (it.quantity - 1) + ')">-</button>' +
                         '<span class="cart-qty-val">' + it.quantity + '</span>' +
                         '<button class="cart-qty-btn" onclick="updateQty(' + it.productId + ', ' + (it.quantity + 1) + ')">+</button>' +
                     '</div>' +
-                    '<div class="cart-item-total">$' + lineTotal + '</div>' +
+                    '<div class="cart-item-total">₹' + lineTotal + '</div>' +
                     '<button class="cart-remove-btn" onclick="removeItem(' + it.productId + ')" title="Remove item">&times;</button>' +
                 '</div>';
         });
@@ -267,7 +267,7 @@ async function load() {
                     '<div class="summary-title">Order Summary</div>' +
                     '<div class="summary-row">' +
                         '<span>Items Subtotal</span>' +
-                        '<span>$' + Number(total).toFixed(2) + '</span>' +
+                        '<span>₹' + Number(total).toFixed(2) + '</span>' +
                     '</div>' +
                     '<div class="summary-row">' +
                         '<span>Standard Delivery</span>' +
@@ -275,7 +275,7 @@ async function load() {
                     '</div>' +
                     '<div class="summary-row total">' +
                         '<span>Grand Total</span>' +
-                        '<span>$' + Number(total).toFixed(2) + '</span>' +
+                        '<span>₹' + Number(total).toFixed(2) + '</span>' +
                     '</div>' +
                     '<a href="' + contextPath + '/checkout.jsp" class="btn-checkout-now">Proceed to Checkout &rarr;</a>' +
                 '</div>' +

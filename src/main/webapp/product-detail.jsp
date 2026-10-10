@@ -248,7 +248,7 @@ async function load() {
             '<div class="info-wrap">' +
                 '<div class="detail-cat">' + safeCat + '</div>' +
                 '<h1 class="detail-title">' + safeName + '</h1>' +
-                '<div class="detail-price">$' + priceStr + '</div>' +
+                '<div class="detail-price">₹' + priceStr + '</div>' +
                 '<div class="detail-stock ' + (inStock ? 'stock-available' : 'stock-none') + '">' +
                     (inStock ? '✓ In Stock (' + stock + ' units available)' : '✗ Out of Stock') +
                 '</div>' +

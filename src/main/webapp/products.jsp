@@ -359,7 +359,7 @@ function renderProducts() {
                 '<p class="prod-desc">' + safeDesc + '</p>' +
                 '<div class="prod-footer">' +
                     '<div class="prod-price-row">' +
-                        '<span class="prod-price">$' + priceStr + '</span>' +
+                        '<span class="prod-price">₹' + priceStr + '</span>' +
                         '<span class="prod-stock ' + (inStock ? '' : 'out') + '">' +
                             (inStock ? '✓ ' + stock + ' in stock' : 'Out of stock') +
                         '</span>' +

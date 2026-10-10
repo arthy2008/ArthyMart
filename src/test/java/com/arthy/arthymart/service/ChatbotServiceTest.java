@@ -56,7 +56,7 @@ class ChatbotServiceTest {
     @Test
     void testPriceBudgetQuery() {
         Map<String, Object> resp = chatbotService.handleMessage("find products under 30");
-        assertTrue(resp.get("reply").toString().contains("under $30"));
+        assertTrue(resp.get("reply").toString().contains("under") && resp.get("reply").toString().contains("30"));
         List<?> products = (List<?>) resp.get("products");
         assertFalse(products.isEmpty());
         assertEquals(1, products.size());

@@ -45,8 +45,8 @@ public class ChatbotService {
         try {
             List<Product> allProducts = productDAO.findAll();
 
-            // 1. Check for price queries (e.g. "under 50", "below 100", "less than 30")
-            Pattern pricePattern = Pattern.compile("(under|below|less than|max|budget)\\s*\\$?(\\d+(\\.\\d+)?)");
+            // 1. Check for price queries (e.g. "under 50", "below 100", "less than 30", "under ₹500")
+            Pattern pricePattern = Pattern.compile("(under|below|less than|max|budget)\\s*[\\$₹rs\\.]*\\s*(\\d+(\\.\\d+)?)");
             Matcher priceMatcher = pricePattern.matcher(msg);
             if (priceMatcher.find()) {
                 BigDecimal maxPrice = new BigDecimal(priceMatcher.group(2));
@@ -56,12 +56,12 @@ public class ChatbotService {
                         .collect(Collectors.toList());
 
                 if (!matches.isEmpty()) {
-                    response.put("reply", "Here are great options under $" + maxPrice + " available right now:");
+                    response.put("reply", "Here are great options under ₹" + maxPrice + " available right now:");
                     response.put("products", matches);
                     response.put("suggestions", List.of("Show electronics", "Show all deals", "How does checkout work?"));
                     return response;
                 } else {
-                    response.put("reply", "I couldn't find any products under $" + maxPrice + ". Our budget items start around $19.99.");
+                    response.put("reply", "I couldn't find any products under ₹" + maxPrice + ". Our budget items start around ₹19.99.");
                     response.put("products", Collections.emptyList());
                     response.put("suggestions", defaultSuggestions());
                     return response;
@@ -84,7 +84,7 @@ public class ChatbotService {
 
                     response.put("reply", "Here are popular items in the " + cat + " category:");
                     response.put("products", catProducts);
-                    response.put("suggestions", List.of("Items under $50", "Best rated products", "View all products"));
+                    response.put("suggestions", List.of("Items under ₹50", "Best rated products", "View all products"));
                     return response;
                 }
             }

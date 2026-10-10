@@ -179,7 +179,7 @@ async function load() {
                         '<div class="order-date">Placed on ' + dateStr + '</div>' +
                     '</div>' +
                     '<div style="text-align:right;">' +
-                        '<div class="order-amount">$' + Number(o.totalAmount || 0).toFixed(2) + '</div>' +
+                        '<div class="order-amount">₹' + Number(o.totalAmount || 0).toFixed(2) + '</div>' +
                         '<span class="badge ' + badgeClass + '">' + status + '</span>' +
                     '</div>' +
                 '</div>' +
