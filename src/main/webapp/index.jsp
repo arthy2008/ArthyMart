@@ -391,6 +391,7 @@
     <div class="nav-links">
         <a href="${pageContext.request.contextPath}/index.jsp">Home</a>
         <a href="${pageContext.request.contextPath}/products.jsp">Products</a>
+        <a href="${pageContext.request.contextPath}/wishlist.jsp">❤️ Wishlist</a>
         <a href="${pageContext.request.contextPath}/cart.jsp">🛒 Cart</a>
         <a href="${pageContext.request.contextPath}/orders.jsp">My Orders</a>
         <c:choose>
@@ -602,5 +603,6 @@
     <p>© 2026 <span>Arthy Mart</span> · Built with Java Servlets, JDBC, Tomcat 9 & H2 · All rights reserved</p>
 </footer>
 
+<script src="${pageContext.request.contextPath}/js/chat-widget.js"></script>
 </body>
 </html>

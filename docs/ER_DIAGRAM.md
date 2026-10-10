@@ -9,6 +9,8 @@ erDiagram
     products ||--o{ cart_items : "in (product_id)"
     products ||--o{ order_items : "ordered as (product_id)"
     products ||--o{ reviews : "rated (product_id)"
+    users ||--o{ wishlist : "saves (user_id)"
+    products ||--o{ wishlist : "saved as (product_id)"
     orders ||--o{ order_items : "contains (order_id)"
 
     users {
@@ -49,6 +51,12 @@ erDiagram
         INT user_id FK
         INT product_id FK
         INT quantity
+    }
+    wishlist {
+        INT id PK
+        INT user_id FK
+        INT product_id FK
+        TIMESTAMP created_at
     }
     reviews {
         INT id PK

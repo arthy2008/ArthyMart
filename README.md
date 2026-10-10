@@ -1,243 +1,203 @@
 # ARTHY MART
 
-ArthyMart is a multi-seller e-commerce marketplace web application built with Java Servlets, JDBC, Apache Tomcat 9, and H2 Database for Anna University R2025 Semester 3 Capstone.
+**ArthyMart** is a full-stack multi-vendor e-commerce web application built with **Java 17, Maven, Java Servlets (javax.servlet), JSP/JSTL, Apache Tomcat 9, H2 Database (HikariCP connection pool), and jBCrypt**.
+
+Designed and implemented for Anna University R2025 Semester 3 Capstone Evaluation and Final Demonstration.
 
 ---
 
-## 1. Features (F1–F8)
+## 1. Features Overview
 
-- **F1 — Authentication & Roles:**
-  - Buyer and Seller self-registration
-  - Login & Logout
-  - Seeded Admin account (public Admin registration strictly blocked)
-  - Password hashing with jBCrypt (cost factor 12 for registration, 10 for seeds)
-  - `HttpSession` management with session fixation protection (old session invalidated and regenerated on login)
-  - Explicit 30-minute session timeout and HttpOnly cookies
-  - `AuthFilter` enforcing session authentication and role-based authorization
-
+### Mandatory Core Features (F1–F8)
+- **F1 — Authentication & Role-Based Access Control:**
+  - Buyer and Seller self-registration with instant validation.
+  - Secure login with jBCrypt password hashing (cost factor 10).
+  - Seeded Admin account (`admin@arthymart.com` / `password123`).
+  - Session fixation protection, 30-minute timeout, and HttpOnly cookies.
+  - `AuthFilter` enforcing strict RBAC (`BUYER`, `SELLER`, `ADMIN`).
 - **F2 — Seller Product Management:**
-  - Create new product listings with complete validation (name, description, price, stock, category, image URL)
-  - Edit existing listings owned by the seller
-  - Delete own listings
-  - Seller dashboard listing view (`/seller/dashboard.jsp`)
-
+  - Create, edit, and delete product listings.
+  - Manage price, stock, category, description, and image URL.
+  - Isolated seller listings (`/seller/dashboard.jsp` via `?mine=true`).
 - **F3 — Buyer Product Browsing & Discovery:**
-  - Browse all products with category badges and stock indicators
-  - Keyword search across name and description
-  - Category filtering
-  - Combined search and filter queries
-  - Product details view with review history
-  - Friendly empty-result handling with quick-reset
-
+  - Catalog browsing with category pills (`Electronics`, `Books`, `Home & Kitchen`, `Clothing`, `Sports`).
+  - Keyword search across product name and description.
+  - Client-side sorting (Price Low-to-High, Price High-to-Low, Name A-Z).
+  - Stock badges and responsive product cards.
 - **F4 — Shopping Cart:**
-  - Add items to cart with requested quantity
-  - Update quantity (+ / -) with automatic stock validation
-  - Remove individual items or clear cart
-  - Dynamic running total computed server-side
-  - Empty cart UX handling with checkout guard
-
+  - Add to cart, quantity steppers (`+` / `-`), remove items, and clear cart.
+  - Server-enforced pricing and live subtotal calculations.
+  - Empty cart handling with call-to-action button.
 - **F5 — Checkout & Mock Payment:**
-  - Single-click mock payment confirmation (always approved in MVP)
-  - Atomic database transaction across 4 operations:
-    1. Create order record (`orders`)
-    2. Insert order items (`order_items`) with server-enforced price
-    3. Decrement product inventory (`stock_qty >= requested`)
-    4. Clear buyer's cart (`cart_items`)
-  - Prevention of empty-cart checkout and out-of-stock purchase
+  - Transactional order placement with inventory verification.
+  - Safe stock decrement and automated cart cleanup.
+  - Instant mock payment approval for demo evaluation.
+- **F6 — Orders & Visual Order Tracking:**
+  - **Buyer View:** Order history with a 5-stage visual progression stepper (`PENDING → CONFIRMED → SHIPPED → DELIVERED → CANCELLED`).
+  - **Cancellation:** Buyers can cancel orders while in `PENDING` status.
+  - **Seller View:** Incoming order fulfillment with status updates.
+- **F7 — Admin Control Center:**
+  - Real-time gross platform revenue, user count, order count, and listing count.
+  - Role-filtered user account management with deletion safety.
+  - All orders inspection and inappropriate listing moderation.
+  - Live system health status badge (Database UP / DOWN).
+- **F8 — Verified Reviews & Ratings:**
+  - 1 to 5 star ratings with written feedback.
+  - Verified Purchase rule: only buyers who completed delivery can review.
+  - Unique constraint preventing duplicate reviews.
 
-- **F6 — Orders:**
-  - **Buyer:** Order history view with total amount, status, date, and items list
-  - **Seller:** Incoming order view for orders containing the seller's products
-  - Order status workflow: `PENDING → CONFIRMED → SHIPPED → DELIVERED → CANCELLED`
-  - Strict authorization: buyers cannot view orders belonging to other buyers
-
-- **F7 — Admin Panel:**
-  - View all users (with `passwordHash` strictly omitted via `UserResponseDTO`)
-  - View all orders across all buyers and sellers
-  - View all active listings
-  - Moderate/delete inappropriate listings and accounts
-  - Admin-only authorization via `AuthFilter` and `/api/admin/*`
-
-- **F8 — Reviews & Ratings:**
-  - 1–5 star ratings on completed/delivered orders
-  - Purchase verification: only buyers who actually purchased the product can review
-  - One review per user per product constraint
-  - Rating validation (1 to 5) and XSS-safe output rendering
+### Value-Added Enhancements
+- **🤖 AI Shopping Assistant Chatbot:**
+  - Real-time catalog discovery: queries active products, prices, and categories.
+  - Handles budget constraints (e.g., "products under $50"), category questions, and store policies (shipping, returns, checkout).
+  - Returns clickable product cards and quick suggestion pills.
+  - Pluggable external LLM adapter (via `GEMINI_API_KEY` or `AI_API_KEY`), with zero-dependency fallback.
+- **❤️ Wishlist:**
+  - Save favorite products directly from catalog or details view.
+  - Dedicated `/wishlist.jsp` view with one-click "Move to Cart" action.
+- **📊 Sales Dashboard & KPIs:**
+  - Seller revenue KPIs (Gross Revenue, Total Orders, Active Listings, Pending Fulfillment).
+  - Admin platform volume metrics.
+- **🎨 Unified Royal Navy Blue UI/UX:**
+  - Consistent branding across all JSP views with mobile-responsive design.
 
 ---
 
-## 2. Tech Stack
+## 2. Technology Stack
 
 | Layer | Technologies |
 |---|---|
-| **Language & Runtime** | Java 17 (JDK 17 LTS), Apache Tomcat 9.0.x |
-| **Web Tier** | Servlet API 4.0.1 (`javax.servlet.*`), JSP 2.3, JSTL 1.2, Vanilla JavaScript (`fetch`), CSS3 |
-| **Data & Persistence** | H2 Database 2.2.224, HikariCP 5.1.0, JDBC (PreparedStatement only) |
-| **Security & Utilities** | jBCrypt 0.4, Gson 2.10.1, SLF4J 2.0.9 + Logback 1.4.14 |
-| **Build & Quality** | Apache Maven 3.8+, Maven Checkstyle Plugin 3.3.1, SpotBugs Maven Plugin 4.8.3.1 |
-| **CI / CD** | GitHub Actions (`.github/workflows/build.yml`) on Ubuntu with Temurin JDK 17 |
-| **Testing** | JUnit 5.10.1, Mockito 5.8.0, Embedded in-memory H2 |
+| **Runtime & Language** | Java 17 LTS, Apache Tomcat 9.0.x |
+| **Web Tier** | Servlet API 4.0.1 (`javax.servlet.*`), JSP 2.3, JSTL 1.2, JavaScript (`fetch` API), CSS3 |
+| **Data & Persistence** | H2 Database 2.2.224, HikariCP 5.1.0, JDBC (PreparedStatements exclusively) |
+| **Security & Utilities** | jBCrypt 0.4, Google Gson 2.10.1, SLF4J 2.0.9 + Logback 1.4.14 |
+| **Build & Quality** | Apache Maven 3.9+, Maven Checkstyle Plugin 3.3.1, SpotBugs 4.8.3.1 |
+| **Testing** | JUnit 5.10.1, Mockito 5.8.0, Embedded in-memory H2 test suite |
+| **CI / CD** | GitHub Actions (`.github/workflows/build.yml`) |
 
 ---
 
-## 3. Architecture
+## 3. Database Schema
 
-```
-Browser Client (JSP + Vanilla JS fetch)
-   │
-   ▼
-[EncodingFilter] (UTF-8 request & response)
-   │
-   ▼
-[SecurityHeadersFilter] (X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Referrer-Policy)
-   │
-   ▼
-[AuthFilter] (Session validation, Role-based access: BUYER / SELLER / ADMIN)
-   │
-   ▼
-Servlets / Front Controllers:
-├── AuthServlet (/api/auth/*)
-├── ProductServlet (/api/products/*)
-├── CartServlet (/api/cart/*)
-├── OrderServlet (/api/orders/*)
-├── ReviewServlet (/api/reviews/*)
-├── AdminServlet (/api/admin/*)
-└── HealthServlet (/api/v1/health, /api/health)
-   │
-   ▼
-Service Layer (Validation, Pricing, Authorization rules)
-├── UserService
-├── ProductService
-├── CartService
-├── OrderService
-└── ReviewService
-   │
-   ▼
-DAO Layer (Pure JDBC with PreparedStatement and try-with-resources)
-├── UserDAO
-├── ProductDAO
-├── CartDAO
-├── OrderDAO
-└── ReviewDAO
-   │
-   ▼
-HikariCP Connection Pool (Single pool managed by DatabaseConnectionListener)
-   │
-   ▼
-H2 Database (Schema DDL + Seed Data + Transactions)
-```
+The database consists of 7 relational tables:
+1. `users` (id, name, email [UNIQUE], password_hash, role [BUYER|SELLER|ADMIN], created_at)
+2. `products` (id, seller_id [FK], name, description, price, stock_qty, category, image_url, created_at)
+3. `orders` (id, buyer_id [FK], status, total_amount, created_at)
+4. `order_items` (id, order_id [FK], product_id [FK], quantity, unit_price, created_at)
+5. `cart_items` (id, user_id [FK], product_id [FK], quantity, created_at, UNIQUE(user_id, product_id))
+6. `wishlist` (id, user_id [FK], product_id [FK], created_at, UNIQUE(user_id, product_id))
+7. `reviews` (id, product_id [FK], user_id [FK], rating [1..5], comment, created_at, UNIQUE(product_id, user_id))
 
-### Architectural Boundaries
-- **No SQL in Controllers/Servlets:** All persistence operations go through Services and DAOs.
-- **No business logic in DAOs:** DAOs execute parameterized queries and map result sets.
-- **No direct DB access from JSP:** JSPs call REST endpoints or render server-provided attributes.
-- **DTO Separation:** `UserResponseDTO` never exposes `passwordHash`.
-- **PreparedStatement Everywhere:** Zero string concatenation in SQL queries.
+All foreign keys enforce `ON DELETE CASCADE`. Indexes are configured on foreign keys and frequently queried fields.
 
 ---
 
-## 4. Diagrams
+## 4. Default Demo Accounts
 
-The architectural and design diagrams are documented in detail:
-- **D1 — ER Diagram:** [docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md) (All tables, keys, FK indexes, and constraints)
-- **D2 — Use Case Diagram:** [docs/USE_CASE_DIAGRAM.md](docs/USE_CASE_DIAGRAM.md) (Guest, Buyer, Seller, Admin use cases & authorization matrix)
-- **D3 — Sequence Diagram:** [docs/SEQUENCE_DIAGRAM.md](docs/SEQUENCE_DIAGRAM.md) (Login, Checkout, and Review flows)
+All default accounts are pre-seeded at application startup:
 
----
-
-## 5. Database & Seed Data
-
-### Required Tables
-- `users`: User identity, roles (`BUYER`, `SELLER`, `ADMIN`), BCrypt hash, timestamps
-- `products`: Product catalog, seller FK, price (`DECIMAL(10,2)`), stock, category, image URL
-- `orders`: Order header, buyer FK, status, total amount (`DECIMAL(10,2)`)
-- `order_items`: Order line items, product FK, unit price, quantity, timestamp
-- `cart_items`: Buyer shopping carts, unique per `(user_id, product_id)`, timestamp
-- `reviews`: Product reviews, rating (1–5), unique per `(product_id, user_id)`
-
-### Seed Accounts (Password: `password123`)
 | Role | Email | Password |
 |---|---|---|
-| **ADMIN** | `admin@arthymart.com` | `password123` |
-| **SELLER** | `seller@arthymart.com` | `password123` |
-| **BUYER** | `buyer@arthymart.com` | `password123` |
+| **Administrator** | `admin@arthymart.com` | `password123` |
+| **Seller** | `seller@arthymart.com` | `password123` |
+| **Buyer** | `buyer@arthymart.com` | `password123` |
 
 ---
 
-## 6. Health API
-
-- **Endpoint:** `GET /api/v1/health` (also accessible at `GET /api/health`)
-- **Status:** Public (bypasses `AuthFilter`)
-- **Verification:** Actively verifies database connectivity via `DatabaseConnectionListener.checkHealth()`.
-- **Response (DB Healthy):** `200 OK`
-  ```json
-  {
-    "status": "UP",
-    "db": "UP"
-  }
-  ```
-- **Response (DB Unreachable):** `503 Service Unavailable`
-  ```json
-  {
-    "status": "DOWN",
-    "db": "DOWN"
-  }
-  ```
-
----
-
-## 7. Build, Test & CI
+## 5. Localhost Setup & Execution Guide
 
 ### Prerequisites
-- JDK 17
-- Apache Maven 3.8+
+- JDK 17 installed
+- Apache Maven 3.8+ installed
+- Apache Tomcat 9.0.x installed
 
-### Build & Verification Commands
-```bash
-# Clean, compile, run all 47 tests, execute Checkstyle, run SpotBugs, and package WAR
-mvn -B clean verify
-
-# Run unit and integration tests only
-mvn test
-
-# Run Checkstyle audit only
-mvn checkstyle:check
-
-# Run SpotBugs static analysis only
-mvn spotbugs:check
+### Step 1: Open in VS Code
+Open the project directory in VS Code:
+```text
+C:\Users\acer\OneDrive\Documents\Default Project\ArthyMart-main
 ```
 
-### GitHub Actions CI
-The workflow file `.github/workflows/build.yml` executes `mvn -B clean verify` on push and pull requests on `ubuntu-latest` with Temurin JDK 17.
+### Step 2: Build the WAR File
+Open PowerShell in the project root and execute:
+```powershell
+mvn clean package
+```
+This produces `target/ArthyMart.war`.
+
+### Step 3: Run on Apache Tomcat 9 (Port 8080)
+Copy the WAR file into your Tomcat `webapps` directory:
+```powershell
+Copy-Item "target\ArthyMart.war" "C:\Program Files\Apache Software Foundation\Tomcat 9.0_Tomcat9_Arthy\webapps\ArthyMart.war" -Force
+```
+*Note: Apache Tomcat automatically expands the WAR file into `/ArthyMart/`.*
+
+### Step 4: Open in Your Browser
+- **Storefront:** [http://localhost:8080/ArthyMart/](http://localhost:8080/ArthyMart/)
+- **Product Catalog:** [http://localhost:8080/ArthyMart/products.jsp](http://localhost:8080/ArthyMart/products.jsp)
+- **Login:** [http://localhost:8080/ArthyMart/login.jsp](http://localhost:8080/ArthyMart/login.jsp)
+- **Seller Center:** [http://localhost:8080/ArthyMart/seller/dashboard.jsp](http://localhost:8080/ArthyMart/seller/dashboard.jsp)
+- **Admin Center:** [http://localhost:8080/ArthyMart/admin/dashboard.jsp](http://localhost:8080/ArthyMart/admin/dashboard.jsp)
+- **System Health:** [http://localhost:8080/ArthyMart/api/v1/health](http://localhost:8080/ArthyMart/api/v1/health)
+
+### Step 5: Inspect Database via H2 Web Console
+1. Open [http://localhost:8080/ArthyMart/h2-console/](http://localhost:8080/ArthyMart/h2-console/)
+2. Set **Driver Class:** `org.h2.Driver`
+3. Set **JDBC URL:** `jdbc:h2:mem:arthymartdb;DB_CLOSE_DELAY=-1;MODE=MySQL`
+4. Set **User Name:** `sa` (Leave Password blank)
+5. Click **Connect** to query tables directly.
 
 ---
 
-## 8. Tomcat 9 Deployment
+## 6. REST API Reference
 
-1. Build the WAR artifact:
-   ```bash
-   mvn clean package
-   ```
-   Artifact produced: `target/arthymart-1.0-SNAPSHOT.war`
-2. Copy `target/arthymart-1.0-SNAPSHOT.war` to `$CATALINA_HOME/webapps/arthymart.war`.
-3. Start Tomcat 9:
-   - Linux/macOS: `./bin/startup.sh`
-   - Windows: `.\bin\startup.bat`
-4. Access the application:
-   - Home: `http://localhost:8080/arthymart/`
-   - Health: `http://localhost:8080/arthymart/api/v1/health`
+| Endpoint | Method | Role | Description |
+|---|---|---|---|
+| `/api/auth/register` | POST | Public | User self-registration |
+| `/api/auth/login` | POST | Public | User login & session creation |
+| `/api/auth/logout` | GET/POST | Auth | Session invalidation |
+| `/api/chat` | GET/POST | Public | AI Shopping Assistant query |
+| `/api/products` | GET | Public | List products / search / filter |
+| `/api/products?mine=true` | GET | Seller/Admin | List seller-owned products |
+| `/api/products` | POST | Seller/Admin | Create product |
+| `/api/products/{id}` | GET/PUT/DELETE | Varies | Single product CRUD |
+| `/api/cart` | GET/POST/DELETE | Buyer/Auth | View cart, add item, clear cart |
+| `/api/cart/{id}` | PUT/DELETE | Buyer/Auth | Update quantity, remove item |
+| `/api/wishlist` | GET/POST/DELETE | Buyer/Auth | View wishlist, add item, clear |
+| `/api/wishlist/{id}` | DELETE | Buyer/Auth | Remove specific wishlisted product |
+| `/api/orders` | GET | Buyer/Auth | Get buyer order history |
+| `/api/orders?view=seller` | GET | Seller/Admin | Get seller incoming orders |
+| `/api/orders?view=seller-stats` | GET | Seller/Admin | Get seller revenue KPIs |
+| `/api/orders/checkout` | POST | Buyer/Auth | Transactional checkout cart |
+| `/api/orders/{id}` | GET/PUT | Buyer/Seller | View order / update fulfillment status |
+| `/api/reviews` | GET/POST | Public / Buyer | View reviews / submit verified review |
+| `/api/admin/stats` | GET | Admin | Platform volume KPIs |
+| `/api/admin/users` | GET/DELETE | Admin | Manage user accounts |
+| `/api/admin/orders` | GET | Admin | View all platform orders |
+| `/api/admin/products` | GET/DELETE | Admin | Moderate product listings |
+| `/api/v1/health` | GET | Public | Database and service health check |
 
 ---
 
-## 9. Live URL & Demo
+## 7. College Final Viva Demonstration Checklist
 
-- **Local Deployment URL:** `http://localhost:8080/arthymart/`
-- **Health Check URL:** `http://localhost:8080/arthymart/api/v1/health`
-- **Screenshots:** Previews available for Home, Catalog, Seller Dashboard, Cart, Orders, and Admin views.
-
----
-
-## 10. Known Limitations & Out-of-Scope Items
-
-- **Payment Gateway:** Mock payment is used (transactions auto-approved upon checkout verification).
-- **AI Chatbot (Week 9+):** Strictly out of scope for the September 21, 2026 Full Build + Deploy checkpoint and will be implemented in subsequent milestones.
+1. **Architecture & Startup:** Show running app on `http://localhost:8080/ArthyMart/` and verified health check `/api/v1/health`.
+2. **AI Shopping Chatbot:** Click floating assistant bubble, ask *"show me products under 50"*, demonstrate clickable product recommendation card.
+3. **Buyer Journey:**
+   - Sign in as `buyer@arthymart.com` / `password123`.
+   - Browse products, filter by category, sort by price.
+   - Save item to Wishlist (`❤️`), visit `/wishlist.jsp`, move to cart.
+   - Adjust cart quantities, proceed to `/checkout.jsp`, confirm order.
+   - Open `/orders.jsp`, verify order shows in 5-step visual tracking timeline.
+4. **Seller Journey:**
+   - Sign in as `seller@arthymart.com` / `password123`.
+   - Open `/seller/dashboard.jsp`, observe real-time Revenue and Order KPIs.
+   - Add a new product listing, see it appear in table.
+   - Open Orders fulfillment, update status to `SHIPPED` / `DELIVERED`.
+5. **Verified Review Verification:**
+   - Return to Buyer account, open delivered product details, submit review with 5-star rating.
+   - Demonstrate that non-purchased products prevent review submission.
+6. **Administrator Control:**
+   - Sign in as `admin@arthymart.com` / `password123`.
+   - Open `/admin/dashboard.jsp`, inspect gross volume stats, user roles table, and listing moderation.
+7. **Database Inspection:** Open `/h2-console/`, run `SELECT * FROM orders;` to demonstrate relational integrity.
+8. **Automated Testing:** Run `mvn test` in terminal to prove 100% test pass rate.

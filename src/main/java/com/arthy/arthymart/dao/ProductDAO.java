@@ -63,8 +63,10 @@ public class ProductDAO {
             params.add(like);
         }
         if (category != null && !category.trim().isEmpty()) {
-            sql.append(" AND LOWER(category) = ?");
-            params.add(category.trim().toLowerCase());
+            sql.append(" AND (LOWER(category) = ? OR LOWER(category) LIKE ?)");
+            String cat = category.trim().toLowerCase();
+            params.add(cat);
+            params.add("%" + cat + "%");
         }
         sql.append(" ORDER BY created_at DESC");
         try (Connection conn = DatabaseConnectionListener.getConnection();

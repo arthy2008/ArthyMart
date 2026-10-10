@@ -45,9 +45,9 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // Always permit health endpoints and H2 console
+        // Always permit health endpoints, H2 console, and AI chatbot
         if (path.equals("/api/v1/health") || path.equals("/api/health")
-                || path.startsWith("/h2-console")) {
+                || path.startsWith("/h2-console") || path.startsWith("/api/chat")) {
             chain.doFilter(request, response);
             return;
         }
@@ -131,9 +131,11 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        // 3. Buyer / Authenticated User area: /cart.jsp, /checkout.jsp, /orders.jsp, /api/cart/*, /api/orders/*, POST /api/reviews, /api/auth/me
+        // 3. Buyer / Authenticated User area: /cart.jsp, /checkout.jsp, /orders.jsp, /wishlist.jsp, /api/cart/*, /api/orders/*, /api/wishlist/*
         if (path.equals("/cart.jsp") || path.equals("/checkout.jsp") || path.equals("/orders.jsp")
+                || path.equals("/wishlist.jsp")
                 || path.startsWith("/api/cart") || path.startsWith("/api/orders")
+                || path.startsWith("/api/wishlist")
                 || path.startsWith("/api/auth/me")
                 || (path.startsWith("/api/reviews") && "POST".equals(method))) {
             if (user == null) {

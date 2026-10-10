@@ -120,7 +120,24 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             List<Order> orders;
-            if (user.getRole() == User.Role.SELLER && "seller".equals(req.getParameter("view"))) {
+            if (user.getRole() == User.Role.SELLER && "seller-stats".equals(req.getParameter("view"))) {
+                List<Order> sellerOrders = orderService.getOrdersForSeller(user.getId());
+                java.math.BigDecimal totalRev = sellerOrders.stream()
+                        .filter(o -> o.getStatus() != Order.Status.CANCELLED)
+                        .map(Order::getTotalAmount)
+                        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+                long pendingCount = sellerOrders.stream()
+                        .filter(o -> o.getStatus() == Order.Status.PENDING)
+                        .count();
+                java.util.Map<String, Object> stats = new java.util.HashMap<>();
+                stats.put("status", "success");
+                stats.put("totalOrders", sellerOrders.size());
+                stats.put("totalRevenue", totalRev);
+                stats.put("pendingOrders", pendingCount);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(stats));
+                return;
+            } else if (user.getRole() == User.Role.SELLER && "seller".equals(req.getParameter("view"))) {
                 orders = orderService.getOrdersForSeller(user.getId());
             } else if (user.getRole() == User.Role.ADMIN && "all".equals(req.getParameter("view"))) {
                 orders = orderService.getAllOrders();

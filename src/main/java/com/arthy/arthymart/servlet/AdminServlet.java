@@ -56,10 +56,29 @@ public class AdminServlet extends HttpServlet {
             } else if ("/products".equals(pathInfo)) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write(gson.toJson(productDAO.findAll()));
+            } else if ("/stats".equals(pathInfo)) {
+                List<Order> orders = orderService.getAllOrders();
+                java.math.BigDecimal totalRev = orders.stream()
+                        .filter(o -> o.getStatus() != Order.Status.CANCELLED)
+                        .map(Order::getTotalAmount)
+                        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
+                Map<String, Long> statusCounts = orders.stream()
+                        .collect(Collectors.groupingBy(o -> o.getStatus().name(), Collectors.counting()));
+
+                Map<String, Object> stats = new HashMap<>();
+                stats.put("status", "success");
+                stats.put("totalRevenue", totalRev);
+                stats.put("totalOrders", orders.size());
+                stats.put("totalUsers", userDAO.findAll().size());
+                stats.put("totalProducts", productDAO.findAll().size());
+                stats.put("ordersByStatus", statusCounts);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(stats));
             } else {
                 Map<String, Object> out = new HashMap<>();
                 out.put("status", "success");
-                out.put("endpoints", new String[]{"/api/admin/users", "/api/admin/orders", "/api/admin/products"});
+                out.put("endpoints", new String[]{"/api/admin/users", "/api/admin/orders", "/api/admin/products", "/api/admin/stats"});
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write(gson.toJson(out));
             }

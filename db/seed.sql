@@ -11,7 +11,11 @@ INSERT INTO products (seller_id, name, description, price, stock_qty, category, 
 (2, 'Mechanical Gaming Keyboard', 'RGB backlight tactile mechanical switches and braided cable', 79.50, 30, 'Electronics', 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400'),
 (2, 'Noise-Cancelling Headphones', 'Over-ear wireless Bluetooth headphones with 30h battery life', 149.00, 20, 'Electronics', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400'),
 (2, 'Java Programming Masterclass', 'Comprehensive modern Java 17+ guide from syntax to architecture', 39.95, 100, 'Books', 'https://images.unsplash.com/photo-1532012164546-f432f2e3777a?w=400'),
-(2, 'Stainless Steel Water Bottle', 'Double-wall vacuum insulated 750ml thermal flask', 19.99, 75, 'Home & Kitchen', 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400');
+(2, 'Stainless Steel Water Bottle', 'Double-wall vacuum insulated 750ml thermal flask', 19.99, 75, 'Home & Kitchen', 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400'),
+(2, 'Classic Cotton Crewneck T-Shirt', '100% premium breathable combed cotton relaxed fit t-shirt', 24.99, 60, 'Clothing', 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400'),
+(2, 'Pro Series Running Shoes', 'Lightweight cushioned athletic sneakers with high traction sole', 59.99, 45, 'Clothing', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'),
+(2, 'FIFA Official Match Football', 'All-weather synthetic leather competition ball with thermal bonding', 34.50, 40, 'Sports', 'https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?w=400'),
+(2, 'Adjustable Dumbbells Set', 'Quick-change weight selector dumbbells ranging from 5 to 25 kg', 89.00, 25, 'Sports', 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400');
 
 -- Sample Completed Order (so buyer can immediately review purchased products)
 INSERT INTO orders (buyer_id, total_amount, status) VALUES

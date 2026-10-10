@@ -72,3 +72,16 @@ CREATE INDEX IF NOT EXISTS idx_cart_items_user ON cart_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_cart_items_product ON cart_items(product_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews(user_id);
+
+CREATE TABLE IF NOT EXISTS wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, product_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_wishlist_user ON wishlist(user_id);
+CREATE INDEX IF NOT EXISTS idx_wishlist_product ON wishlist(product_id);
