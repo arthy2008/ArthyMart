@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Center - Arthy Mart</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         .seller-header {
             background: linear-gradient(135deg, #0d47a1, #1565c0);
@@ -41,16 +41,16 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a href="../" class="nav-brand">
+    <a href="${pageContext.request.contextPath}/" class="nav-brand">
         <span class="nav-logo">🛒</span>
         <span class="nav-brand-name">ARTHY <span>MART</span></span>
     </a>
     <div class="nav-links">
-        <a href="../index.jsp">Storefront</a>
-        <a href="../products.jsp">Products</a>
-        <a href="../orders.jsp">Orders</a>
-        <a href="dashboard.jsp" style="color:#80d8ff;">🏪 Seller Dashboard</a>
-        <a href="../api/auth/logout" class="btn-nav-outline">Logout</a>
+        <a href="${pageContext.request.contextPath}/index.jsp">Storefront</a>
+        <a href="${pageContext.request.contextPath}/products.jsp">Products</a>
+        <a href="${pageContext.request.contextPath}/orders.jsp">Orders</a>
+        <a href="${pageContext.request.contextPath}/seller/dashboard.jsp" style="color:#80d8ff;">🏪 Seller Dashboard</a>
+        <a href="${pageContext.request.contextPath}/api/auth/logout" class="btn-nav-outline">Logout</a>
     </div>
 </nav>
 
@@ -60,7 +60,7 @@
             <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:4px;">Merchant Sales Dashboard 🏪</h1>
             <p style="opacity:0.85; font-size:0.9rem;">Manage inventory, monitor revenues, and fulfill customer orders.</p>
         </div>
-        <a href="../orders.jsp?view=seller" class="btn btn-accent" style="color:#fff;">Fulfill Orders &rarr;</a>
+        <a href="${pageContext.request.contextPath}/orders.jsp?view=seller" class="btn btn-accent" style="color:#fff;">Fulfill Orders &rarr;</a>
     </div>
 
     <!-- KPI Analytics Cards -->
@@ -69,7 +69,7 @@
             <div class="kpi-icon">💰</div>
             <div class="kpi-info">
                 <h4>Total Sales Revenue</h4>
-                <div class="kpi-value" id="kpiRev">$0.00</div>
+                <div class="kpi-value" id="kpiRev">₹0.00</div>
             </div>
         </div>
         <div class="kpi-card">
@@ -153,15 +153,17 @@
     <p>&copy; 2026 <span>Arthy Mart</span> &middot; Full Stack E-Commerce Platform</p>
 </footer>
 
-<script src="../js/chat-widget.js"></script>
+<script src="${pageContext.request.contextPath}/js/chat-widget.js"></script>
 <script>
+const contextPath = '${pageContext.request.contextPath}';
+
 async function load() {
     // 1. Load Seller Stats
     try {
-        const statsRes = await fetch('../api/orders?view=seller-stats');
+        const statsRes = await fetch(contextPath + '/api/orders?view=seller-stats', { credentials: 'same-origin' });
         if (statsRes.ok) {
             const stats = await statsRes.json();
-            document.getElementById('kpiRev').textContent = '$' + Number(stats.totalRevenue || 0).toFixed(2);
+            document.getElementById('kpiRev').textContent = '₹' + Number(stats.totalRevenue || 0).toFixed(2);
             document.getElementById('kpiOrders').textContent = stats.totalOrders || 0;
             document.getElementById('kpiPending').textContent = stats.pendingOrders || 0;
         }
@@ -170,7 +172,7 @@ async function load() {
     // 2. Load Seller Products
     const wrap = document.getElementById('tableWrapper');
     try {
-        const res = await fetch('../api/products?mine=true');
+        const res = await fetch(contextPath + '/api/products?mine=true', { credentials: 'same-origin' });
         if (res.status === 401 || res.status === 403) {
             wrap.innerHTML = '<p style="color:#dc2626;">Seller authentication required. Please sign in with a SELLER account.</p>';
             return;
@@ -218,7 +220,7 @@ async function load() {
                         '</div>' +
                     '</td>' +
                     '<td><span class="badge" style="background:#e0f2fe; color:#0369a1;">' + safeCat + '</span></td>' +
-                    '<td><strong>$' + priceStr + '</strong></td>' +
+                    '<td><strong>₹' + priceStr + '</strong></td>' +
                     '<td><span class="badge ' + badgeClass + '">' + stock + ' in stock</span></td>' +
                     '<td>' +
                         '<button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="editProductById(' + p.id + ')">Edit</button> ' +
@@ -255,7 +257,7 @@ function editProductById(id) {
 async function deleteProduct(productId) {
     if (!confirm('Are you sure you want to permanently delete this listing?')) return;
     try {
-        const res = await fetch('../api/products/' + productId, { method: 'DELETE' });
+        const res = await fetch(contextPath + '/api/products/' + productId, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
             alert('Listing deleted successfully.');
             load();
@@ -281,13 +283,15 @@ document.getElementById('pForm').addEventListener('submit', async (e) => {
     };
 
     try {
-        const res = pid ? await fetch('../api/products/' + pid, {
+        const res = pid ? await fetch(contextPath + '/api/products/' + pid, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify(body)
-        }) : await fetch('../api/products', {
+        }) : await fetch(contextPath + '/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify(body)
         });
 

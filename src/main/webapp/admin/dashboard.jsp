@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Control Center - Arthy Mart</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <style>
         .admin-header {
             background: linear-gradient(135deg, #0d47a1, #1565c0);
@@ -64,16 +64,16 @@
 
 <!-- Navbar -->
 <nav class="navbar">
-    <a href="../" class="nav-brand">
+    <a href="${pageContext.request.contextPath}/" class="nav-brand">
         <span class="nav-logo">🛒</span>
         <span class="nav-brand-name">ARTHY <span>MART</span></span>
     </a>
     <div class="nav-links">
-        <a href="../index.jsp">Storefront</a>
-        <a href="../products.jsp">Products</a>
-        <a href="../orders.jsp">Orders</a>
-        <a href="dashboard.jsp" style="color:#80d8ff;">🛡️ Admin Panel</a>
-        <a href="../api/auth/logout" class="btn-nav-outline">Logout</a>
+        <a href="${pageContext.request.contextPath}/index.jsp">Storefront</a>
+        <a href="${pageContext.request.contextPath}/products.jsp">Products</a>
+        <a href="${pageContext.request.contextPath}/orders.jsp">Orders</a>
+        <a href="${pageContext.request.contextPath}/admin/dashboard.jsp" style="color:#80d8ff;">🛡️ Admin Panel</a>
+        <a href="${pageContext.request.contextPath}/api/auth/logout" class="btn-nav-outline">Logout</a>
     </div>
 </nav>
 
@@ -94,7 +94,7 @@
             <div class="kpi-icon">💵</div>
             <div class="kpi-info">
                 <h4>Gross Platform Volume</h4>
-                <div class="kpi-value" id="kpiPlatformRev">$0.00</div>
+                <div class="kpi-value" id="kpiPlatformRev">₹0.00</div>
             </div>
         </div>
         <div class="kpi-card">
@@ -170,8 +170,10 @@
     <p>&copy; 2026 <span>Arthy Mart</span> &middot; Full Stack E-Commerce Platform</p>
 </footer>
 
-<script src="../js/chat-widget.js"></script>
+<script src="${pageContext.request.contextPath}/js/chat-widget.js"></script>
 <script>
+const contextPath = '${pageContext.request.contextPath}';
+
 function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -182,7 +184,7 @@ function switchTab(tabId, btn) {
 async function load() {
     // 1. Health check
     try {
-        const h = await fetch('../api/health');
+        const h = await fetch(contextPath + '/api/health', { credentials: 'same-origin' });
         const hj = await h.json();
         const pill = document.getElementById('healthPill');
         if (hj.status === 'UP' && hj.db === 'UP') {
@@ -196,10 +198,10 @@ async function load() {
 
     // 2. Stats
     try {
-        const statsRes = await fetch('../api/admin/stats');
+        const statsRes = await fetch(contextPath + '/api/admin/stats', { credentials: 'same-origin' });
         if (statsRes.ok) {
             const stats = await statsRes.json();
-            document.getElementById('kpiPlatformRev').textContent = '$' + Number(stats.totalRevenue || 0).toFixed(2);
+            document.getElementById('kpiPlatformRev').textContent = '₹' + Number(stats.totalRevenue || 0).toFixed(2);
             document.getElementById('kpiPlatformOrders').textContent = stats.totalOrders || 0;
             document.getElementById('kpiPlatformUsers').textContent = stats.totalUsers || 0;
             document.getElementById('kpiPlatformProducts').textContent = stats.totalProducts || 0;
@@ -211,7 +213,7 @@ async function load() {
 
     // 4. Load Orders
     try {
-        const oRes = await fetch('../api/admin/orders');
+        const oRes = await fetch(contextPath + '/api/admin/orders', { credentials: 'same-origin' });
         if (oRes.ok) {
             const orders = await oRes.json();
             const oBox = document.getElementById('adminOrdersList');
@@ -226,7 +228,7 @@ async function load() {
                         '<tr>' +
                             '<td><strong>Order #' + o.id + '</strong></td>' +
                             '<td>Buyer #' + o.buyerId + '</td>' +
-                            '<td><strong>$' + o.totalAmount + '</strong></td>' +
+                            '<td><strong>₹' + o.totalAmount + '</strong></td>' +
                             '<td><span class="badge ' + statusClass + '">' + o.status + '</span></td>' +
                             '<td>' + dateStr + '</td>' +
                         '</tr>';
@@ -239,7 +241,7 @@ async function load() {
 
     // 5. Load Listings
     try {
-        const pRes = await fetch('../api/admin/products');
+        const pRes = await fetch(contextPath + '/api/admin/products', { credentials: 'same-origin' });
         if (pRes.ok) {
             const products = await pRes.json();
             const pBox = document.getElementById('adminProductsList');
@@ -255,7 +257,7 @@ async function load() {
                         '<tr>' +
                             '<td>#' + p.id + '</td>' +
                             '<td><strong>' + safeName + '</strong></td>' +
-                            '<td>$' + p.price + '</td>' +
+                            '<td>₹' + p.price + '</td>' +
                             '<td>' + stock + '</td>' +
                             '<td>' + safeCat + '</td>' +
                             '<td>' +
@@ -273,7 +275,7 @@ async function load() {
 async function loadUsers(role) {
     const uBox = document.getElementById('usersList');
     try {
-        const r = await fetch('../api/admin/users' + (role ? '?role=' + role : ''));
+        const r = await fetch(contextPath + '/api/admin/users' + (role ? '?role=' + role : ''), { credentials: 'same-origin' });
         if (r.status === 401 || r.status === 403) {
             uBox.innerHTML = '<p style="color:#dc2626;">Administrator credentials required.</p>';
             return;
@@ -311,7 +313,7 @@ async function loadUsers(role) {
 async function adminDeleteProduct(id) {
     if (!confirm('Forcefully remove product listing #' + id + '?')) return;
     try {
-        const res = await fetch('../api/admin/products/' + id, { method: 'DELETE' });
+        const res = await fetch(contextPath + '/api/admin/products/' + id, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
             alert('Listing removed by administrator.');
             load();
@@ -326,7 +328,7 @@ async function adminDeleteProduct(id) {
 async function deleteUser(userId) {
     if (!confirm('Delete user #' + userId + '? This will cascade remove their associated records.')) return;
     try {
-        const res = await fetch('../api/admin/users/' + userId, { method: 'DELETE' });
+        const res = await fetch(contextPath + '/api/admin/users/' + userId, { method: 'DELETE', credentials: 'same-origin' });
         if (res.ok) {
             alert('User deleted.');
             loadUsers('');
