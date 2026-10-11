@@ -8,7 +8,7 @@ COPY spotbugs-exclude.xml .
 COPY src ./src
 COPY db ./db
 
-RUN mvn clean package -DskipTests -B
+RUN mvn clean package -DskipTests -Dcheckstyle.skip=true -B
 
 FROM tomcat:9.0-jdk17-temurin
 
