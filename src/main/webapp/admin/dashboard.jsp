@@ -288,18 +288,19 @@ async function loadUsers(role) {
         let html = '<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
         users.forEach(u => {
             const roleBadge = u.role === 'ADMIN' ? 'badge-cancelled' : (u.role === 'SELLER' ? 'badge-confirmed' : 'badge-delivered');
-            html += `
-                <tr>
-                    <td>#${u.id}</td>
-                    <td><strong>${escapeHtml(u.name)}</strong></td>
-                    <td>${escapeHtml(u.email)}</td>
-                    <td><span class="badge ${roleBadge}">${u.role}</span></td>
-                    <td>${u.createdAt || 'Standard'}</td>
-                    <td>
-                        ${u.role !== 'ADMIN' ? `<button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteUser(${u.id})">Delete</button>` : '<span style="color:#94a3b8; font-size:0.75rem;">Protected</span>'}
-                    </td>
-                </tr>
-            `;
+            const actionBtn = (u.role !== 'ADMIN')
+                ? '<button class="btn btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="deleteUser(' + u.id + ')">Delete</button>'
+                : '<span style="color:#94a3b8; font-size:0.75rem;">Protected</span>';
+            const userDate = u.createdAt || 'Standard';
+
+            html += '<tr>' +
+                '<td>#' + u.id + '</td>' +
+                '<td><strong>' + escapeHtml(u.name) + '</strong></td>' +
+                '<td>' + escapeHtml(u.email) + '</td>' +
+                '<td><span class="badge ' + roleBadge + '">' + u.role + '</span></td>' +
+                '<td>' + userDate + '</td>' +
+                '<td>' + actionBtn + '</td>' +
+                '</tr>';
         });
         html += '</tbody></table>';
         uBox.innerHTML = html;
