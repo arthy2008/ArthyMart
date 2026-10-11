@@ -1,8 +1,10 @@
 package com.arthy.arthymart.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String name;
     private String email;

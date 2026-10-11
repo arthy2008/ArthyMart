@@ -209,7 +209,7 @@ async function load() {
     } catch (e) {}
 
     // 3. Load Users
-    loadUsers('');
+    await loadUsers('');
 
     // 4. Load Orders
     try {
